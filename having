@@ -1,0 +1,16 @@
+### while using having, remember to add "group by"
+proc sql;
+   create table _temp_beg
+   as select a.date, b.*
+   from (select distinct date from _temp) a left join _cal b
+   on b.evt<=a.date 
+   /*find exact or preceding trading date of revision date*/
+   group by a.date
+   having (a.date-b.evt)=min(a.date-b.evt);
+   
+   create table _temp1  
+   as select a.*, b.*
+   from _temp a left join _temp_beg b
+   on b.date=a.date
+   where signal =1 or signal=-1;
+quit;
